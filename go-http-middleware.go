@@ -5,6 +5,8 @@ import (
 	"math"
 	"net/http"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func MakeCachingHandler(age time.Duration, h http.Handler) http.Handler {
@@ -40,4 +42,12 @@ func MakeLoggingHandler(h http.Handler) http.Handler {
 			method := r.Method
 			fmt.Printf("%s %s %s %d\n", method, uri, r.RemoteAddr, end.Sub(start).Milliseconds())
 		})
+}
+
+func EnablePrometheus() {
+	http.Handle("/metrics", promhttp.Handler())
+}
+
+func EnablePrometheusForMux(mux *http.ServeMux) {
+	mux.Handle("/metrics", promhttp.Handler())
 }
